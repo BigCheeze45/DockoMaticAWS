@@ -6,18 +6,20 @@ variable "secret_key" {
   description = "AWS IAM user secret key. See https://goo.gl/b9rHov"
 }
 
-variable "aws_key_pair" {}
-
 variable "modeller_license_key" {
   description = "Modeller license key"
 }
 
-variable "region" {
-  default = "us-east-1"
+variable "aws_key_pair" {
+  default = "~/.ssh/id_rsa.pub"
 }
 
-variable "username" {
-  default = "fedora"
+variable "s3_bucket_name" {
+  default = "dockomaticresults"
+}
+
+variable "region" {
+  default = "us-east-1"
 }
 
 variable "amis" {
@@ -59,6 +61,6 @@ variable "instance_type" {
 }
 
 variable "instance_count" {
-  description = "The total number of EC2 (VMs) to create and power on. Default is 1"
-  default     = 1
+  description = "The total number of EC2 (VMs) to create and power on. Default is 0"
+  default     = 0
 }

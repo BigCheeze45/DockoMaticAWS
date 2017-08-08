@@ -4,8 +4,62 @@ provider "aws" {
   region     = "${var.region}"
 }
 
-# AWS instance
-resource "aws_instance" "machine" {
+# AWS master instance
+resource "aws_instance" "master_node" {
+  ami                         = "${lookup(var.amis, var.region)}"
+  instance_type               = "${var.instance_type}"
+  subnet_id                   = "${aws_subnet.subnet.id}"
+  associate_public_ip_address = "true"
+  security_groups             = ["${aws_security_group.security-group.id}"]
+  key_name                    = "${aws_key_pair.key_pair.key_name}"
+
+  root_block_device {
+    volume_type           = "standard"
+    volume_size           = 80
+    iops                  = 0
+    delete_on_termination = "true"
+  }
+
+  tags {
+    Name = "DockoMaticMasterNode"
+  }
+
+  connection {
+    user        = "fedora"
+    private_key = "${file("~/.ssh/id_rsa")}"
+  }
+
+  provisioner "file" {
+    source      = "artifacts/install.zip"
+    destination = "/tmp/install.zip"
+  }
+
+  # Upload directory containing your test files
+  provisioner "file" {
+    # # # CHANGE ME # # #
+    source      = "artifacts/tests"
+    destination = "/home/fedora"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo dnf install -qy unzip python-pip",
+      "pip install awscli --upgrade --user --quiet",
+      "mkdir -p ~/.aws",
+      "echo [default] >> ~/.aws/config",
+      "echo aws_access_key_id=${var.access_key} >>  ~/.aws/config",
+      "echo aws_secret_access_key=${var.secret_key} >>  ~/.aws/config",
+      "echo region=${var.region} >>  ~/.aws/config",
+      "unzip -q /tmp/install.zip -d /tmp",
+      "unzip -q /tmp/install/dockomatic.zip -d /tmp/install",
+      "chmod +x /tmp/install/install_aws.sh",
+      "cd /tmp/install; sudo ./install_aws.sh ${var.modeller_license_key}",
+    ]
+  }
+}
+
+# cluster nodes
+resource "aws_instance" "node" {
   count                       = "${var.instance_count}"
   ami                         = "${lookup(var.amis, var.region)}"
   instance_type               = "${var.instance_type}"
@@ -26,24 +80,24 @@ resource "aws_instance" "machine" {
   }
 
   connection {
-    user        = "${var.username}"
+    user        = "fedora"
     private_key = "${file("~/.ssh/id_rsa")}"
   }
 
-  provisioner "file" {
-    source      = "artifacts/install.zip"
-    destination = "/tmp/install.zip"
-  }
+  # provisioner "file" {
+  #   source      = "artifacts/install.zip"
+  #   destination = "/tmp/install.zip"
+  # }
 
-  provisioner "remote-exec" {
-    inline = [
-      "sudo dnf install -y unzip",
-      "unzip -q /tmp/install.zip -d /tmp",
-      "unzip -q /tmp/install/dockomatic.zip -d /tmp/install",
-      "chmod +x /tmp/install/install_aws.sh",
-      "cd /tmp/install; sudo ./install_aws.sh ${var.modeller_license_key}",
-    ]
-  }
+  # provisioner "remote-exec" {
+  #   inline = [
+  #     "sudo dnf install -y unzip",
+  #     "unzip -q /tmp/install.zip -d /tmp",
+  #     "unzip -q /tmp/install/dockomatic.zip -d /tmp/install",
+  #     "chmod +x /tmp/install/install_aws.sh",
+  #     "cd /tmp/install; sudo ./install_aws.sh ${var.modeller_license_key}",
+  #   ]
+  # }
 }
 
 resource "aws_vpc" "vpc" {
@@ -148,7 +202,21 @@ resource "aws_security_group" "security-group" {
   }
 }
 
-# Print host names with their public IP to connect to
-output "segment_info" {
-  value = "HOSTS: ${join(", ", aws_instance.machine.*.tags.Name)}\n\t\t PUB_IP: ${join(", ", aws_instance.machine.*.public_ip)}"
+resource "aws_s3_bucket" "result_bucket" {
+  bucket = "${var.s3_bucket_name}"
+  acl    = "private"
+  region = "${var.region}"
+}
+
+# Print host names with their public IP to connect
+output "master" {
+  value = "MASTER: ${join(", ", aws_instance.master_node.*.tags.Name)}\n\t\t PUBLIC_IP: ${join(", ", aws_instance.master_node.*.public_ip)}"
+}
+
+output "nodes" {
+  value = "MASTER: ${join(", ", aws_instance.node.*.tags.Name)}\n\t\t PUBLIC_IP: ${join(", ", aws_instance.node.*.public_ip)}"
+}
+
+output "bucket_info" {
+  value = "BUCKET NAME: ${join(", ", aws_s3_bucket.result_bucket.*.id)}"
 }
