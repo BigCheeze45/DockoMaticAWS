@@ -57,6 +57,9 @@ In order to connect to your instance you will need both an
 The default user-name on the instance is `fedora`. So, with all the required
 pieces you can connect to your instance as follow:
 `ssh -i <path/to/key.pem> -X fedora@<public-IP>`
+
+You can start DockoMatic on the instance by typing `dockomatic` into the terminal. The program will load and warn some modules are missing. Click to disable the modules and continue.
+
 <!-- aws s3 sync . s3://dockomaticresults -->
 <!-- NOTE: cannot delete empty buckets -->
 

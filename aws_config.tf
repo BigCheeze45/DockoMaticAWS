@@ -29,11 +29,6 @@ resource "aws_instance" "master_node" {
     private_key = "${file("~/.ssh/id_rsa")}"
   }
 
-  provisioner "file" {
-    source      = "artifacts/install.zip"
-    destination = "/tmp/install.zip"
-  }
-
   # Upload directory containing your test files
   provisioner "file" {
     # # # CHANGE ME # # #
@@ -50,6 +45,8 @@ resource "aws_instance" "master_node" {
       "echo aws_access_key_id=${var.access_key} >>  ~/.aws/config",
       "echo aws_secret_access_key=${var.secret_key} >>  ~/.aws/config",
       "echo region=${var.region} >>  ~/.aws/config",
+      "echo downloading installer",
+      "curl https://s3-us-west-2.amazonaws.com/bsudevbucket/install.zip --output /tmp/install.zip --silent",
       "unzip -q /tmp/install.zip -d /tmp",
       "unzip -q /tmp/install/dockomatic.zip -d /tmp/install",
       "chmod +x /tmp/install/install_aws.sh",
@@ -83,11 +80,6 @@ resource "aws_instance" "node" {
     user        = "fedora"
     private_key = "${file("~/.ssh/id_rsa")}"
   }
-
-  # provisioner "file" {
-  #   source      = "artifacts/install.zip"
-  #   destination = "/tmp/install.zip"
-  # }
 
   # provisioner "remote-exec" {
   #   inline = [
@@ -209,12 +201,12 @@ resource "aws_s3_bucket" "result_bucket" {
 }
 
 # Print host names with their public IP to connect
-output "master" {
+output "master_info" {
   value = "MASTER: ${join(", ", aws_instance.master_node.*.tags.Name)}\n\t\t PUBLIC_IP: ${join(", ", aws_instance.master_node.*.public_ip)}"
 }
 
-output "nodes" {
-  value = "MASTER: ${join(", ", aws_instance.node.*.tags.Name)}\n\t\t PUBLIC_IP: ${join(", ", aws_instance.node.*.public_ip)}"
+output "node_info" {
+  value = "NODE: ${join(", ", aws_instance.node.*.tags.Name)}\n\t\t PUBLIC_IP: ${join(", ", aws_instance.node.*.public_ip)}"
 }
 
 output "bucket_info" {
