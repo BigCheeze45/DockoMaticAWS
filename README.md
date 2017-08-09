@@ -2,6 +2,8 @@
 This project uses [Terraform](https://www.terraform.io/) to create an [Amazon Web Services (AWS)](https://aws.amazon.com/) infrastructure to run [DockoMatic](https://goo.gl/n2tgKo)
 in the cloud.
 
+**NOTE:** Development is on-going for this project and things might break sometime :smile:
+
 ## Prerequisites
 To get this project up and running you will need the following:
   * [AWS account](https://aws.amazon.com/)
