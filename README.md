@@ -23,7 +23,7 @@ following *__required__* parameters:
   modeller_license_key = "MODELLER license key"
   ```
   A complete list of supported parameters and their default values can be found
-  below.
+  [below](#paramters-defaults).
 
   In `aws_config.tf` find and update the following to point to the directory
   containing your test file to be uploaded to the instance. Do *not* include a
