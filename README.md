@@ -62,8 +62,22 @@ pieces you can connect to your instance as follow:
 
 You can start DockoMatic on the instance by typing `dockomatic` into the terminal. The program will load and warn some modules are missing. Click to disable the modules and continue.
 
-<!-- aws s3 sync . s3://dockomaticresults -->
-<!-- NOTE: cannot delete empty buckets -->
+## Downloading Your Test Results
+When your jobs are finished running the files will need to be uploaded to S3 for you to download. That can be done using `s3-upload`:
+
+```
+s3-upload <s3-bucket-name> <source> [dryrun]
+Options:
+ s3-bucket-name: The name of the S3 bucket to upload the content of source into
+ source: The source file or directroy to upload to the specified S3 bucket. Files will be uploaded directly into the bucket and folders will be created in the bucket for sub-directories within source
+ dryrun: Displays the operations that would be performed using the specified command without actually running them
+```
+You can run `aws s3 ls` to list all buckets you have access to. You can download your files through the AWS web console once the file upload is complete.
+
+## Destroying Resources (Use with care)
+When you are ready to tear down everything simply run `terraform destroy` on your local machine. This terminate any running instance as well as destroy all Terrafrom created resources. **There is NO UNDO!**
+
+__**NOTE:**__ The Terraform created S3 bucket will NOT be destroy if there are files in it. Terraform will throw an error because of this and that is OK. You can empty the bucket manuly through the web console and re-run `terraform destroy` or delete it all together from the web console. In either case make sure to get your test results.
 
 ## Parameter Defaults
 The following are all available parameters with their default values. If you
