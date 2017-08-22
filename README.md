@@ -4,16 +4,16 @@ in the cloud.
 
 **NOTE:** Development is on-going for this project and things might break sometime :smile:
 
-## Prerequisites
+## Requirments
 To get this project up and running you will need the following:
   * [AWS account](https://aws.amazon.com/)
     * With an AWS account you can then get a [access and secret key](https://goo.gl/b9rHov). It is recommend NOT to use the root account (i.e. owner account) but instead an IAM user.
-  * [Terraform](https://www.terraform.io)
+  * [Terraform](https://www.terraform.io) (0.10.x and up) and [Terraform AWS provider](https://github.com/terraform-providers/terraform-provider-aws)
   * [MODELLER license key](https://goo.gl/ufNr7Z)
 
 ## Setup
-In the root of this project create a new file named `terraform.tfvars` with the
-following *__required__* parameters:
+First in the root of the project run `terraform init`. Next, while still in the root of the project create a new file named `terraform.tfvars` with the
+following *__required__* keys and their corresponding values:
 
   ```terraform
   access_key = "AWS user access key"
@@ -22,7 +22,7 @@ following *__required__* parameters:
   instance_type = "AWS instance type"
   modeller_license_key = "MODELLER license key"
   ```
-  A complete list of supported parameters and their default values can be found
+  A complete list of supported keys and their default values can be found
   [below](#paramters-defaults).
 
   In `aws_config.tf` find and update the following to point to the directory

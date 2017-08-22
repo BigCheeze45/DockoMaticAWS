@@ -203,7 +203,7 @@ resource "aws_s3_bucket" "result_bucket" {
 
 # Print host names with their public IP to connect
 output "master_info" {
-  value = "MASTER: ${join(", ", aws_instance.master_node.*.tags.Name)}\n\t\t PUBLIC_IP: ${join(", ", aws_instance.master_node.*.public_ip)}"
+  value = "NAME: ${join(", ", aws_instance.master_node.*.tags.Name)}\n\t\t PUBLIC_IP: ${join(", ", aws_instance.master_node.*.public_ip)}"
 }
 
 output "node_info" {
@@ -211,5 +211,5 @@ output "node_info" {
 }
 
 output "bucket_info" {
-  value = "BUCKET NAME: ${join(", ", aws_s3_bucket.result_bucket.*.id)}"
+  value = "NAME: ${join(", ", aws_s3_bucket.result_bucket.*.id)}"
 }
