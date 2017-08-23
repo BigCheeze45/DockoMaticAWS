@@ -1,4 +1,6 @@
 # DockoMatic on AWS
+DockoMatic is a GUI application taht is intended to ease and automate the creation and management of AutoDock jobs for high throughtput screning of ligand/receptor interactions.
+
 This project uses [Terraform](https://www.terraform.io/) to create an [Amazon Web Services (AWS)](https://aws.amazon.com/) infrastructure to run [DockoMatic](https://goo.gl/n2tgKo)
 in the cloud.
 
